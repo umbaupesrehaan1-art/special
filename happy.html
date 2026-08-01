@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy National Girlfriend Day ❤️ | For You</title>
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #120310 0%, #290823 40%, #1a001a 100%);
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 182, 193, 0.25);
+      --accent-color: #ff6b95;
+      --accent-glow: rgba(255, 107, 149, 0.5);
+      --gold-accent: #ffd700;
+      --text-main: #fff0f5;
+      --text-sub: #e0b0c0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+      transition: background 2s ease;
+    }
+
+    /* --- BACKGROUND ANIMATIONS (Hearts, Stars, Fireflies) --- */
+    .bg-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Floating Glowing Hearts */
+    .glowing-heart {
+      position: absolute;
+      bottom: -60px;
+      color: var(--accent-color);
+      font-size: 20px;
+      filter: drop-shadow(0 0 10px var(--accent-color));
+      animation: floatUpGlow 9s infinite linear;
+      opacity: 0.7;
+    }
+
+    @keyframes floatUpGlow {
+      0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.8; }
+      80% { opacity: 0.8; }
+      100% { transform: translateY(-115vh) scale(1.2) rotate(360deg); opacity: 0; }
+    }
+
+    /* Fireflies */
+    .firefly {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px 3px var(--gold-accent);
+      animation: floatFirefly 6s infinite ease-in-out;
+      opacity: 0;
+    }
+
+    @keyframes floatFirefly {
+      0%, 100% { opacity: 0; transform: translate(0, 0); }
+      50% { opacity: 0.9; transform: translate(30px, -40px); }
+    }
+
+    /* Shooting Stars */
+    .shooting-star {
+      position: absolute;
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, #fff, transparent);
+      animation: shoot 4s infinite ease-in-out;
+      opacity: 0;
+      transform: rotate(-35deg);
+    }
+
+    @keyframes shoot {
+      0% { opacity: 0; transform: translateX(0) translateY(0) rotate(-35deg); }
+      10% { opacity: 1; }
+      30% { opacity: 0; transform: translateX(-300px) translateY(200px) rotate(-35deg); }
+      100% { opacity: 0; }
+    }
+
+    /* Cursor Sparkle Trail */
+    .sparkle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--gold-accent);
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 8px var(--gold-accent);
+      animation: fadeSparkle 0.8s linear forwards;
+      z-index: 9999;
+    }
+
+    @keyframes fadeSparkle {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.1) translateY(10px); }
+    }
+
+    /* --- LOADING SCREEN --- */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #0f020e;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    .heart-loader {
+      font-size: 50px;
+      color: var(--accent-color);
+      animation: loaderPulse 1.2s infinite ease-in-out;
+      filter: drop-shadow(0 0 20px var(--accent-color));
+    }
+
+    @keyframes loaderPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+
+    .loader-text {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: var(--text-sub);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* --- MAIN APP CONTAINER --- */
+    .app-container {
+      width: 92%;
+      max-width: 520px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 32px 24px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 107, 149, 0.15);
+      z-index: 10;
+      text-align: center;
+      position: relative;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    /* --- SCREENS & TRANSITIONS --- */
+    .screen {
+      display: none;
+      width: 100%;
+      opacity: 0;
+      transform: scale(0.96) translateY(15px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      filter: blur(4px);
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: blur(0px);
+    }
+
+    /* --- TYPOGRAPHY & BUTTONS --- */
+    h1 {
+      color: var(--accent-color);
+      font-size: 1.65rem;
+      margin-bottom: 14px;
+      line-height: 1.35;
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    p {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .heartbeat-text {
+      animation: softHeartbeat 2.5s infinite ease-in-out;
+    }
+
+    @keyframes softHeartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); text-shadow: 0 0 15px var(--accent-glow); }
+    }
+
+    /* Ripple & Glowing Buttons */
+    .btn {
+      position: relative;
+      background: linear-gradient(135deg, #ff6b95 0%, #d83a6f 100%);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 107, 149, 0.4);
+      transition: all 0.3s ease;
+      outline: none;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 28px rgba(255, 107, 149, 0.6);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-secret-trigger {
+      background: transparent;
+      border: 1px solid var(--gold-accent);
+      color: var(--gold-accent);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+      font-size: 0.9rem;
+      padding: 8px 18px;
+      margin-bottom: 15px;
+    }
+
+    .btn-secret-trigger:hover {
+      background: rgba(255, 215, 0, 0.1);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    /* Ripple Effect */
+    .btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: rippleEffect 0.6s linear;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    @keyframes rippleEffect {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* --- SCRATCH CARDS GALLERY --- */
+    .scratch-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      margin: 15px 0;
+    }
+
+    .scratch-card-wrapper {
+      position: relative;
+      width: 100%;
+      height: 110px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .scratch-card-wrapper:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px var(--accent-glow);
+    }
+
+    .scratch-secret-msg {
+      position: absolute;
+      inset: 0;
+      background: rgba(40, 10, 35, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      text-align: center;
+      color: var(--text-main);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    canvas.scratch-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+    }
+
+    /* --- LUCKY ENVELOPE --- */
+    .envelope-wrapper {
+      width: 100%;
+      margin: 20px 0;
+      cursor: pointer;
+    }
+
+    .envelope {
+      position: relative;
+      width: 220px;
+      height: 140px;
+      background: #8b2643;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.4s ease;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .envelope:hover {
+      transform: scale(1.04);
+    }
+
+    .envelope-stamp {
+      font-size: 32px;
+      filter: drop-shadow(0 0 8px var(--gold-accent));
+    }
+
+    .envelope-letter {
+      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 20px;
+      border-radius: 16px;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      text-align: center;
+      margin-top: 15px;
+      border: 2px solid var(--accent-color);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      animation: openLetter 0.5s ease forwards;
+    }
+
+    @keyframes openLetter {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- PHOTO SECTION / MEMORIES --- */
+    .photo-frame-container {
+      width: 100%;
+      margin: 15px 0;
+    }
+
+    .photo-placeholder-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px dashed var(--accent-color);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .photo-placeholder-card:hover {
+      background: rgba(255, 107, 149, 0.08);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .frame-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.8;
+    }
+
+    /* --- PLAYFUL QUESTION AREA --- */
+    .btn-group-question {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      position: relative;
+      width: 100%;
+      justify-content: center;
+      min-height: 60px;
+    }
+
+    #no-btn {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ddd;
+      box-shadow: none;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* --- GLASS CARDS & FINAL PRAYER --- */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 22px;
+      text-align: left;
+      line-height: 1.8;
+      font-size: 0.98rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .moon-bg {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 90px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+
+    /* --- SECRET POPUP MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: linear-gradient(145deg, #2b0a24, #150212);
+      border: 1px solid var(--gold-accent);
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 420px;
+      width: 88%;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+      transform: scale(0.8);
+      transition: transform 0.4s ease;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    /* Hidden Final Surprise Reveal Box */
+    .hidden-reveal-box {
+      display: none;
+      margin-top: 15px;
+      padding: 18px;
+      background: rgba(255, 107, 149, 0.1);
+      border: 1px solid var(--accent-color);
+      border-radius: 16px;
+      animation: fadeInReveal 1s ease forwards;
+    }
+
+    @keyframes fadeInReveal {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Heart Rain Effects */
+    .heart-rain-drop {
+      position: fixed;
+      top: -40px;
+      color: var(--accent-color);
+      font-size: 22px;
+      pointer-events: none;
+      z-index: 999;
+      animation: rainDown 4s linear forwards;
+      filter: drop-shadow(0 0 8px var(--accent-color));
+    }
+
+    @keyframes rainDown {
+      to { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="heart-loader">❤️</div>
+    <div class="loader-text">Creating Magic...</div>
+  </div>
+
+  <!-- Background Animated Layers -->
+  <div class="bg-layer" id="hearts-layer"></div>
+  <div class="bg-layer" id="fireflies-layer"></div>
+  <div class="bg-layer" id="stars-layer">
+    <div class="shooting-star" style="top:20%; right:10%; animation-delay: 1s;"></div>
+    <div class="shooting-star" style="top:40%; right:30%; animation-delay: 3s;"></div>
+  </div>
+
+  <!-- Secret Surprise Modal Popup -->
+  <div class="modal-overlay" id="secret-modal">
+    <div class="modal-content">
+      <h2 style="color: var(--gold-accent); font-size: 1.3rem; margin-bottom: 12px;">Secret Surprise ✨</h2>
+      <p style="font-size: 0.95rem; line-height: 1.7; color: var(--text-main);">
+        "Sach bolun...<br>
+        Ye website sirf ek gift nahi hai...<br>
+        Ye meri taraf se ek chhoti si dua hai...<br>
+        Ki tum jahan bhi raho...<br>
+        Allah tumhe hamesha khush rakhe.<br>
+        Ameen. ❤️🤲"
+      </p>
+      <button class="btn" onclick="closeSecretModal()" style="margin-top: 10px; padding: 10px 24px; font-size: 0.9rem;">Close</button>
+    </div>
+  </div>
+
+  <!-- App Container -->
+  <div class="app-container">
+
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen-1">
+      <button class="btn btn-secret-trigger" onclick="openSecretModal()">Ek Secret Surprise Hai 👀</button>
+      <h1 class="heartbeat-text">Happy National Girlfriend Day ❤️</h1>
+      <p>Aaj National Girlfriend Day hai... aur mujhe laga ki bina kuch expect kiye sirf tumhe ek chhota sa surprise dena chahiye.</p>
+      <p style="font-size: 0.9rem; color: var(--text-sub);">Shayad ye website sirf kuch pages ki ho... lekin iske har page mein meri taraf se ek chhoti si feeling chhupi hai.</p>
+      <button class="btn" onclick="nextScreen(2)">Surprise Open Karo ❤️</button>
+    </div>
+
+    <!-- Screen 2: Scratch Cards -->
+    <div class="screen" id="screen-2">
+      <h1>Chhote Se Dil Ki Baat... 💌</h1>
+      <p style="font-size: 0.9rem; margin-bottom: 10px; color: var(--text-sub);">Neeche diye gaye cards ko scratch karke dekho:</p>
+      
+      <div class="scratch-gallery">
+        <!-- Scratch Card 1 -->
+        <div class="scratch-card-wrapper">
+          <div class="scratch-secret-msg">"Tumhari smile sach mein meri favourite cheez hai... aur shayad hamesha rahegi. ❤️"</div>
+          <canvas class="scratch-canvas" width="470" height="110"></canvas>
+        </div>
+        <!-- Scratch Card 2 -->
+        <div class="scratch-card-wrapper">
+          <div class="scratch-secret-msg">"Pata nahi tumhe yaad ho ya na ho... lekin meri har dua mein aaj bhi tumhari khushi sabse pehle hoti hai. 🤲❤️"</div>
+          <canvas class="scratch-canvas" width="470" height="110"></canvas>
+        </div>
+        <!-- Scratch Card 3 -->
+        <div class="scratch-card-wrapper">
+          <div class="scratch-secret-msg">"Log kehte hain waqt sab badal deta hai... lekin kuch log dil mein hamesha waise hi rehte hain."</div>
+          <canvas class="scratch-canvas" width="470" height="110"></canvas>
+        </div>
+        <!-- Scratch Card 4 -->
+        <div class="scratch-card-wrapper">
+          <div class="scratch-secret-msg">"Chahe hum kitni bhi der baat na karein... meri dua bas itni si hai ki Allah tumhe hamesha khush rakhe, har musibat se bachaye aur tumhare har sapne poore kare. Ameen. ❤️🤲"</div>
+          <canvas class="scratch-canvas" width="470" height="110"></canvas>
+        </div>
+      </div>
+
+      <button class="btn" onclick="nextScreen(3)">Aage Chalo ➜</button>
+    </div>
+
+    <!-- Screen 3: Lucky Envelope & Photos Placeholder -->
+    <div class="screen" id="screen-3">
+      <h1>Ek Khaas Envelope ✉️</h1>
+      <p style="font-size: 0.9rem; color: var(--text-sub);">Is envelope par tap karo:</p>
+      
+      <div class="envelope-wrapper" onclick="openEnvelope()">
+        <div class="envelope">
+          <div class="envelope-stamp">💌</div>
+        </div>
+        <div class="envelope-letter" id="envelope-content">
+          "Har kisi ko life mein special log milte hain...<br>
+          Mujhe khushi hai ki meri life mein tum aayi.<br>
+          <b>Thank You. ❤️</b>"
+        </div>
+      </div>
+
+      <div class="photo-frame-container">
+        <div class="photo-placeholder-card">
+          <div class="frame-icon">🖼️❤️</div>
+          <p style="font-size: 0.92rem; line-height: 1.6; margin: 0; color: var(--text-main);">
+            "Main yahan humari photos add karna chahta tha...<br>
+            Lekin sach kahun... Mere paas tumhari koi photo hi nahi hai.<br>
+            Isliye maine socha... Photos ki jagah apni feelings rakh deta hoon.<br>
+            Kyuki memories sirf photos se nahi... Dil se bhi banti hain. ❤️"
+          </p>
+        </div>
+      </div>
+
+      <button class="btn" onclick="nextScreen(4)" style="margin-top: 10px;">Next Memory</button>
+    </div>
+
+    <!-- Screen 4: Playful Runaway Question -->
+    <div class="screen" id="screen-4">
+      <h1 id="question-title">Ek Baat Batao... 😊</h1>
+      <p id="question-text" class="heartbeat-text">Kya ye surprise dekhkar tum smile ki? 😊</p>
+      
+      <div class="btn-group-question" id="question-btn-group">
+        <button class="btn" onclick="handleYesClick()">Haan 😊</button>
+        <button class="btn" id="no-btn" onmouseover="moveNoButton()" onclick="moveNoButton()">Nahi 😜</button>
+      </div>
+
+      <button class="btn" id="post-question-btn" onclick="nextScreen(5)" style="display: none; margin-top: 20px;">Last Surprise</button>
+    </div>
+
+    <!-- Screen 5: Emotional Soft Letter & Heart Rain Trigger -->
+    <div class="screen" id="screen-5">
+      <h1>Bas Itna Sa Hi Tha... ❤️</h1>
+      <div class="glass-card">
+        <span id="typing-letter"></span>
+      </div>
+      <button class="btn" onclick="triggerHeartRainAndNext()">Aage Dekho ✨</button>
+    </div>
+
+    <!-- Screen 6: Final Prayer Card (Moon & Stars) -->
+    <div class="screen" id="screen-6">
+      <h1 style="color: var(--gold-accent);">Dil Se Ek Dua 🤲✨</h1>
+      
+      <div class="glass-card" style="border-color: rgba(255, 215, 0, 0.3);">
+        <div class="moon-bg">🌙</div>
+        <p style="font-size: 0.98rem; line-height: 1.8; margin: 0; color: #fff8eb;">
+          "Main roz dua karta hoon ki Allah tumhari har pareshani aasaan kare.<br><br>
+          Tumhari har dua qubool ho.<br>
+          Tum hamesha smile karti raho.<br><br>
+          Aur tumhari life mein sirf khushiyan hi khushiyan ho.<br>
+          <b>Ameen. 🤲❤️</b>"
+        </p>
+      </div>
+
+      <button class="btn btn-secret-trigger" style="font-size: 1rem; padding: 12px 28px;" onclick="revealHiddenSurprise()">Bas Ek Last Surprise ❤️</button>
+
+      <div class="hidden-reveal-box" id="hidden-surprise-box">
+        <p style="font-size: 0.95rem; line-height: 1.7; margin: 0; color: var(--text-main);">
+          "Pata hai...<br>
+          Ek month se humari baat nahi hui.<br>
+          Lekin iska matlab ye kabhi nahi tha ki maine tumhari khushi ki dua karna chhod diya.<br><br>
+          Aaj bhi jab dua ke liye haath uthte hain...<br>
+          To tumhara naam dil mein zaroor aata hai.<br><br>
+          Bas itna hi kehna tha...<br>
+          <b>Happy National Girlfriend Day. ❤️</b>"
+        </p>
+      </div>
+
+      <button class="btn" id="final-cinematic-btn" onclick="nextScreen(7)" style="display: none; margin-top: 15px;">Final Screen ➜</button>
+    </div>
+
+    <!-- Screen 7: Cinematic Ending -->
+    <div class="screen" id="screen-7">
+      <h1 style="font-size: 1.8rem; margin-bottom: 20px;">Thank You... ✨</h1>
+      <p style="font-size: 1.05rem; line-height: 1.8;">
+        Ye surprise dekhne ke liye.<br>
+        Bas ek hi dua hai...<br><br>
+        Allah tumhe hamesha apni hifazat mein rakhe.<br>
+        Tumhari har muskurahat hamesha barkarar rahe.<br>
+        Aur tumhari zindagi khushiyon se bhari rahe.<br><br>
+        <b>Ameen. 🤲❤️</b><br><br>
+        <span style="color: var(--accent-color); font-weight: 500;">Happy National Girlfriend Day.</span>
+      </p>
+
+      <div style="margin-top: 35px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; width: 100%;">
+        <p style="font-size: 0.9rem; color: var(--gold-accent); letter-spacing: 1px;">
+          Made with endless love by <b>Rehaan</b> ❤️
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* 1. Loading Screen Handler */
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loading-screen');
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.visibility = 'hidden', 1000);
+      }, 1200);
+    });
+
+    /* 2. Cursor Sparkle Effect */
+    document.addEventListener('mousemove', (e) => {
+      if (Math.random() < 0.25) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = e.clientX + 'px';
+        sparkle.style.top = e.clientY + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+      }
+    });
+
+    /* 3. Ripple Effect on Buttons */
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', function (e) {
+        let x = e.clientX - e.target.getBoundingClientRect().left;
+        let y = e.clientY - e.target.getBoundingClientRect().top;
+        let ripples = document.createElement('span');
+        ripples.className = 'ripple';
+        ripples.style.left = x + 'px';
+        ripples.style.top = y + 'px';
+        this.appendChild(ripples);
+        setTimeout(() => ripples.remove(), 600);
+      });
+    });
+
+    /* 4. Background Generators (Hearts & Fireflies) */
+    const heartsLayer = document.getElementById('hearts-layer');
+    for (let i = 0; i < 22; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'glowing-heart';
+      heart.innerText = ['❤️', '💖', '✨', '💕', '🌸'][Math.floor(Math.random() * 5)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDelay = Math.random() * 8 + 's';
+      heart.style.animationDuration = (7 + Math.random() * 6) + 's';
+      heartsLayer.appendChild(heart);
+    }
+
+    const firefliesLayer = document.getElementById('fireflies-layer');
+    for (let i = 0; i < 15; i++) {
+      const firefly = document.createElement('div');
+      firefly.className = 'firefly';
+      firefly.style.left = Math.random() * 100 + '%';
+      firefly.style.top = Math.random() * 100 + '%';
+      firefly.style.animationDelay = Math.random() * 5 + 's';
+      firefliesLayer.appendChild(firefly);
+    }
+
+    /* 5. Navigation Control */
+    function nextScreen(screenNum) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      setTimeout(() => {
+        const target = document.getElementById(`screen-${screenNum}`);
+        target.classList.add('active');
+
+        if (screenNum === 2) initScratchCards();
+        if (screenNum === 5) startTypingLetter();
+        if (screenNum === 7) startCinematicEnding();
+      }, 200);
+    }
+
+    /* 6. Secret Modal Controls */
+    function openSecretModal() {
+      document.getElementById('secret-modal').classList.add('active');
+    }
+    function closeSecretModal() {
+      document.getElementById('secret-modal').classList.remove('active');
+    }
+
+    /* 7. Scratch Cards Logic */
+    let scratchCardsInited = false;
+    function initScratchCards() {
+      if (scratchCardsInited) return;
+      scratchCardsInited = true;
+
+      document.querySelectorAll('.scratch-card-wrapper').forEach(wrapper => {
+        const canvas = wrapper.querySelector('.scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width = wrapper.clientWidth;
+        const height = canvas.height = wrapper.clientHeight;
+
+        ctx.fillStyle = '#b85271';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('✨ Yahan Scratch Karo ✨', width / 2, height / 2 + 5);
+
+        let isDrawing = false;
+        function scratch(e) {
+          if (!isDrawing) return;
+          const rect = canvas.getBoundingClientRect();
+          const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+          const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+          const x = clientX - rect.left;
+          const y = clientY - rect.top;
+
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.beginPath();
+          ctx.arc(x, y, 22, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        canvas.addEventListener('mousedown', () => isDrawing = true);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mousemove', scratch);
+
+        canvas.addEventListener('touchstart', () => isDrawing = true);
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchmove', scratch);
+      });
+    }
+
+    /* 8. Lucky Envelope Open */
+    function openEnvelope() {
+      const content = document.getElementById('envelope-content');
+      content.style.display = 'block';
+      confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } });
+    }
+
+    /* 9. Playful Runaway Button */
+    function moveNoButton() {
+      const btn = document.getElementById('no-btn');
+      const x = (Math.random() - 0.5) * 220;
+      const y = (Math.random() - 0.5) * 100;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    function handleYesClick() {
+      document.getElementById('question-title').innerText = "Pata Tha Mujhe... ❤️";
+      document.getElementById('question-text').innerText = "Bas isi smile ke liye to itni mehnat ki thi ❤️";
+      document.getElementById('question-btn-group').style.display = 'none';
+      document.getElementById('post-question-btn').style.display = 'inline-block';
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+    }
+
+    /* 10. Typing Animation for Letter */
+    const letterText = "Pata hai... kaafi time ho gaya baat hue.\n\nShayad circumstances badal gaye hain...\nShayad hum dono bhi.\n\nLekin aaj National Girlfriend Day tha...\nAur mujhe laga ki bina kisi expectation ke bas tumhare liye ek chhota sa surprise bana doon.\n\nBas itni si dua hai...\nTum jahan bhi raho...\nKhush raho...\nSmile karti raho...\nAur apne sapne poore karo.\n\nThank You... meri life ka itna beautiful part banne ke liye.\n\nHappy National Girlfriend Day ❤️";
+
+    let letterTyped = false;
+    function startTypingLetter() {
+      if (letterTyped) return;
+      letterTyped = true;
+      let i = 0;
+      const target = document.getElementById('typing-letter');
+
+      function type() {
+        if (i < letterText.length) {
+          const char = letterText.charAt(i);
+          target.innerHTML += (char === '\n') ? '<br>' : char;
+          i++;
+          setTimeout(type, 35);
+        }
+      }
+      type();
+    }
+
+    /* 11. Heart Rain Effect */
+    function triggerHeartRainAndNext() {
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const drop = document.createElement('div');
+          drop.className = 'heart-rain-drop';
+          drop.innerText = ['❤️', '💖', '✨'][Math.floor(Math.random() * 3)];
+          drop.style.left = Math.random() * 100 + '%';
+          drop.style.animationDuration = (3 + Math.random() * 2) + 's';
+          document.body.appendChild(drop);
+          setTimeout(() => drop.remove(), 5000);
+        }, i * 120);
+      }
+      nextScreen(6);
+    }
+
+    /* 12. Hidden Surprise Reveal */
+    function revealHiddenSurprise() {
+      document.getElementById('hidden-surprise-box').style.display = 'block';
+      document.getElementById('final-cinematic-btn').style.display = 'inline-block';
+      confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+    }
+
+    /* 13. Cinematic Night Ending */
+    function startCinematicEnding() {
+      document.body.style.background = "linear-gradient(135deg, #050008 0%, #0d0118 50%, #020005 100%)";
+      confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
+    }
+  </script>
+</body>
+</html>
